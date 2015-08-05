@@ -10,6 +10,8 @@
 	<string>sin_gen</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>3117882CDE11F33C804DEEDB6B33921D3835E634</key>
+		<string>https://github.com/awazaru/gen_sin.git</string>
 		<key>B8713CC902224BC69A5BB57FF08CA1A42680B707</key>
 		<string>https://github.com/awazaru/sin_wave.git</string>
 	</dict>
@@ -17,17 +19,27 @@
 	<string>sin_gen.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>B8713CC902224BC69A5BB57FF08CA1A42680B707</key>
+		<key>3117882CDE11F33C804DEEDB6B33921D3835E634</key>
 		<string>../..</string>
+		<key>B8713CC902224BC69A5BB57FF08CA1A42680B707</key>
+		<string>../../../sin_wave</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/awazaru/sin_wave.git</string>
+	<string>https://github.com/awazaru/gen_sin.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>B8713CC902224BC69A5BB57FF08CA1A42680B707</string>
+	<string>3117882CDE11F33C804DEEDB6B33921D3835E634</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>3117882CDE11F33C804DEEDB6B33921D3835E634</string>
+			<key>IDESourceControlWCCName</key>
+			<string>gen_sin</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
