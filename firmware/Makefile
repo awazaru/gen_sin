@@ -17,11 +17,12 @@
 #                   default_serial = "avrdoper"
 # FUSES ........ Parameters for avrdude to flash the fuses appropriately.
 
+#atmega328P　設定
 DEVICE     = atmega328p
-CLOCK      = 8000000
+CLOCK      = 1000000
 PROGRAMMER = -c hidaspx -P usb
 OBJECTS    = main.o
-FUSES      =-U lfuse:w:0x62:m -U hfuse:w:0xd9:m -U efuse:w:0xff:m
+FUSES      =-U lfuse:w:0xE2:m -U hfuse:w:0xd9:m -U efuse:w:0xff:m
 
 # ATMega8 fuse bits used above (fuse bits for other devices are different!):
 # Example for 8 MHz internal oscillator
