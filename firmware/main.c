@@ -10,23 +10,23 @@
 //#include <util/delay.h>
 
 //#define PI 3.14
-
+#define wave_f 1000 //出したい周波数 サンプリング周波数の半分程度まで
+#define smp_f 8000//サンプリング周波数
+#define num_data 20//sin_dataの要素数
 /*関数宣言*/
 void sin_gen(void);
 
 /*変数宣言*/
-uint8_t timer1_count = 0;/*16bitタイマ用カウント変数*/
-uint8_t max_timer1_count = 17;// 分割数-1
+float timer1_count = 0;/*16bitタイマ用カウント変数*/
+uint16_t sin_count = 0;
+uint8_t max_timer1_count = 19;// 分割数-1
 uint8_t  half_timer1_count = 0;
 uint8_t  half_ICR1 = 0;
-//uint16_t pwm_max = 0;
+float   speed = 0;//カウントアップの速度を調節 speed = (sin_dataの数)/分割数
+float divide_wave = 0;//波形の分割数 divide_wave = (サンプリング周波数)/(出したい周波数)
 
-//uint8_t OCR0B_up  = 1;/*OCR0Aを増加させたいときは1を減少させたいときは0を入れる*/
-//double   rad = 0;//deg * PI / 180.0;
-//float sinwave = 0;
-//float abs_sin =0;
 
-float sinwave_data[]={
+float sinwave_data[]={//要素数20個
     0,0.342,0.643,0.866,
     0.985,0.985,0.866,0.643,0.342,
     0,-0.342,-0.643,-0.866,-0.985,
@@ -35,59 +35,22 @@ float sinwave_data[]={
 
 
 /*関数宣言*/
-/*void usart_tx(unsigned char data){//送信用関数
- while( !(UCSR0A & (1<<UDRE0)) );        //送信ﾊﾞｯﾌｧ空き待機
- UDR0 = data;
- }
- unsigned char usart_rx(void){//受信用関数
- while( !(UCSR0A & (1<<RXC0)) );                //受信完了待機
- return UDR0;                                //受信ﾃﾞｰﾀ返す
- }
- void puts_tx(char *str){//文字列送信用関数
- while( *str != 0x00 ){ //nullになるまで実行
- usart_tx(*str);
- str++;                                    //ｱﾄﾞﾚｽ+1
- }
- }
- void serial_ini(){// シリアル通信設定
- UBRR0 = MYUBRR;
- UCSR0A=0b00000000;//受信すると10000000 送信有効になると00100000
- UCSR0B|=0b00011000;//送受信有効
- UCSR0C=0b00000110;//データ8bit、非同期、バリティなし、stop1bit
- }
- */
+
 
 /*高速PWMではTOP値がOCR0A、比較値がOCR0Bとなるので注意*/
 
 void timer_ini(){//タイマー設定
     /*PWM*/
     TCCR1A |=_BV(COM1B1)|_BV(WGM11);
-    /*位相基準PWM TOP値OCR1A*/
+    /*位相基準PWM TOP値ICR1*/
     TCCR1B|=_BV(WGM13)|_BV(CS10);
     /*WGM13 WGM12 WGM11 WGM10: 1000 位相基準PWM動作 ICR1
      *CS12 CS11 CS10 : 001 分周なし*/
-   // OCR1A = 80;/*1KHz  TOP/50 18分割*/
-    ICR1 = 235;
+
+    ICR1 = 499;
     half_ICR1 = ICR1/2.0;
     TIMSK1|=_BV(ICIE1);/*タイマ/カウンタ1捕獲割り込み許可*/
     OCR1B = 0;
-    /*8bitタイマ1 PWM用*/
-    //  TCCR0A|=_BV(COM0B1)|_BV(WGM00);
-    /*COM0B1 COM0B0 : 10 比較一致でLOW,OC0Bピンに出力
-     *(WGM02) WGM01 WGM00 : 101 位相基準PWM動作,TOPはOCR0A
-     */
-    //   TCCR0B|=_BV(WGM02)|_BV(CS00);
-    /*CS02 CS01 CS00:001 クロック源=CLKi/o 前置分周なし
-     */
-    //TIMSK0|=_BV(TOIE0);
-    /* TOIE0 :1     タイマ/カウンタ0溢れ割り込み許可
-     */
-    // OCR0A = 99;//TOP
-    /*10000HzのPWM周波数, 0.0001s
-     *1KHz時4000;
-     (TOP+1) = 8M/(2*目的周波数);
-     */
-    //  OCR0B = 50 ;//比較
 }
 
 /*タイマ1 捕獲割り込み*/
@@ -95,32 +58,17 @@ ISR(TIMER1_CAPT_vect){
     if(timer1_count>max_timer1_count){
         timer1_count = 0;
     }
-    timer1_count++;
-    OCR1B = half_ICR1+(half_ICR1*sinwave_data[timer1_count]);
+    timer1_count = timer1_count + 1 * speed;
+    sin_count = timer1_count;
+    OCR1B = half_ICR1+(half_ICR1*sinwave_data[sin_count]);
 }
 
 void pin_ini(){//ピン設定
-  //  DDRD = 0b01100000;//PD6(OCR0A)を出力設定
-    //PORTD =0b00000000;
+
     DDRB = 0b00000100;
     PORTB = 0b00000000;
     
    }
-
-/*void sin_gen(void){
- //half_timer1_count = max_timer1_count*0.5;
- if(timer1_count<=half_timer1_count){
- rad =  (timer1_count*180.0/half_timer1_count) * PI / 180.0;
- sinwave = sin(rad);
- //abs_sin = abs(sinwave);
- OCR0B = 50 + 40 * sinwave;
- }else if (timer1_count>half_timer1_count){
- rad =  ((timer1_count-half_timer1_count)*180.0/half_timer1_count) * PI / 180.0;
- sinwave = sin(rad);
- //abs_sin = abs(sinwave);
- OCR0B = 50 - 40 * sinwave;
- }
- }*/
 
 
 /*メイン関数*/
@@ -130,14 +78,13 @@ int main(void){
     pin_ini();
     
     half_timer1_count = max_timer1_count/2;
+    divide_wave = smp_f/wave_f;//分割数決定
+    speed = num_data/divide_wave;//カウンタスピード決定
+    
     
     sei();//割り込み許可
     
     while(1){
-       // OCR1B = half_ICR1+(half_ICR1*sinwave_data[timer1_count]);
-                //OCR0B = sinwave_data[timer1_count];
-        //  sin_gen();
-        
-    }
+          }
     return 0;
 }
