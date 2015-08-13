@@ -22,7 +22,7 @@ DEVICE     = atmega328p
 CLOCK      = 1000000
 PROGRAMMER = -c hidaspx -P usb
 OBJECTS    = main.o
-FUSES      =-U lfuse:w:0xE2:m -U hfuse:w:0xd9:m -U efuse:w:0xff:m
+FUSES      =-Ulfuse:w:0xa6:m -U hfuse:w:0xd9:m -Uefuse:w:0x07:m
 
 # ATMega8 fuse bits used above (fuse bits for other devices are different!):
 # Example for 8 MHz internal oscillator
